@@ -1,0 +1,2 @@
+"""AutoSnap image inference API."""
+
