@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.gradio/
+artifacts/
+dataset_splits/
+*.keras
+*.h5
+*.zip
+models/
