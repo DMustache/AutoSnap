@@ -1,0 +1,10 @@
+# TensorFlow is the primary ML runtime; its compatible dependency range is kept explicit.
+tensorflow==2.20.0
+numpy>=1.26,<2.2
+
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+python-multipart>=0.0.9,<1.0
+pillow>=10.0,<12.0
+pydantic-settings>=2.0,<3.0
+gradio>=5.0,<7.0
