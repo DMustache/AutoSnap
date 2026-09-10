@@ -2,12 +2,15 @@ import csv
 import json
 import tempfile
 import zipfile
+import logging
 from pathlib import Path
 from typing import Any, Protocol
 
 from PIL import Image
 
 from app.core.config import Settings
+
+logger = logging.getLogger(__name__)
 
 
 class ImageModel(Protocol):
@@ -23,6 +26,7 @@ class ModelManager:
         self.model: ImageModel | None = None
         self.load_error: str | None = None
         self._temporary_directory: tempfile.TemporaryDirectory[str] | None = None
+        self.source: str | None = None
 
     @property
     def is_loaded(self) -> bool:
@@ -33,17 +37,46 @@ class ModelManager:
 
         Replace ``_load_from_path`` when the trained model format is known.
         """
-        if not self.settings.model_path:
-            self.load_error = "MODEL_PATH is not configured"
-            return
-        if not self.settings.model_path.is_file():
-            self.load_error = f"Model file does not exist: {self.settings.model_path}"
-            return
         try:
-            self.model = self._load_from_path(self.settings.model_path)
+            if self.settings.model_path and self.settings.model_path.is_file():
+                model_source = self.settings.model_path
+                self.source = str(model_source)
+            elif self.settings.hf_model_repo:
+                model_source = self._download_from_huggingface()
+                self.source = f"hf://{self.settings.hf_model_repo}@{self.settings.hf_model_revision}"
+            else:
+                raise FileNotFoundError(
+                    f"Local model does not exist: {self.settings.model_path}; HF_MODEL_REPO is not configured"
+                )
+            self.model = self._load_from_path(model_source)
             self.load_error = None
         except Exception as exc:
             self.load_error = str(exc)
+            logger.exception("Failed to load AutoSnap model")
+
+    def _download_from_huggingface(self) -> Path:
+        """Download the model bundle to the local HF cache and return its Keras path."""
+        from huggingface_hub import snapshot_download
+
+        snapshot_directory = Path(
+            snapshot_download(
+                repo_id=self.settings.hf_model_repo,
+                repo_type="model",
+                revision=self.settings.hf_model_revision,
+                cache_dir=self.settings.hf_cache_directory,
+                allow_patterns=[
+                    "car_classifier.keras",
+                    "class_metadata.csv",
+                    "price_lookup.csv",
+                    "inference_config.json",
+                    "manifest.json",
+                ],
+            )
+        )
+        model_path = snapshot_directory / "car_classifier.keras"
+        if not model_path.is_file():
+            raise FileNotFoundError(f"Hugging Face repository has no {model_path.name}")
+        return model_path
 
     def _load_from_path(self, path: Path) -> ImageModel:
         """Load the supplied TensorFlow bundle and its class/price metadata."""
@@ -87,6 +120,7 @@ class ModelManager:
 
     def unload(self) -> None:
         self.model = None
+        self.source = None
         if self._temporary_directory:
             self._temporary_directory.cleanup()
             self._temporary_directory = None

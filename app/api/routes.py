@@ -27,11 +27,12 @@ def api_info() -> dict[str, str]:
 
 
 @router.get("/health", tags=["system"])
-def health(request: Request) -> dict[str, str | bool]:
+def health(request: Request) -> dict[str, str | bool | None]:
     manager: ModelManager = request.app.state.model_manager
     return {
         "status": "ok",
         "model_loaded": manager.is_loaded,
+        "model_source": manager.source,
     }
 
 
