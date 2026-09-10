@@ -1,5 +1,7 @@
 # AutoSnap API
 
+https://github.com/user-attachments/assets/e286b657-c86a-4ae7-8e2e-ccea673a210b
+
 Minimal FastAPI image-inference backend. The model manager is initialized during application startup and is shared by requests.
 
 ## Run locally
