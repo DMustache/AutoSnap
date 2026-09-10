@@ -46,6 +46,17 @@ The public model repository does not require a token. For a private repository, 
 
 For the training notebook, install the additional research dependencies from `requirements-training.txt`, then select the Python 3.13 environment as the Jupyter kernel.
 
+## Docker Distroless
+
+The production image uses a multi-stage build with `gcr.io/distroless/python3-debian13:nonroot`. The model is not copied into the image; if no local model is mounted, the application downloads it from Hugging Face during startup into `/tmp/autosnap-hf-cache`.
+
+```bash
+docker build -t autosnap-api:latest .
+docker run --rm -p 8000:8000 autosnap-api:latest
+```
+
+Open `http://localhost:8000/en` for the UI or `http://localhost:8000/docs` for OpenAPI. Distroless images do not include a shell; use a separate debug image when interactive container inspection is needed.
+
 ## Layout
 
 ```text
