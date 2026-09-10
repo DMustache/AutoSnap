@@ -1,0 +1,10 @@
+[tools]
+python = "3.13"
+
+[tasks.demo]
+description = "Start the Gradio car recognition demo"
+run = "CUDA_VISIBLE_DEVICES=-1 .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+[tasks.api]
+description = "Start the FastAPI server"
+run = "CUDA_VISIBLE_DEVICES=-1 .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
