@@ -42,4 +42,8 @@ app/
   core/config.py             # environment-backed settings
   services/model_manager.py  # model lifecycle and adapter boundary
   schemas/prediction.py      # response schemas
+training/
+  classification_en.ipynb    # static English training overview
+  classification_ru.ipynb    # static Russian training overview
+models/                      # local ignored model artifacts
 ```

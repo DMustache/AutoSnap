@@ -1,3 +1,0 @@
-[tool.commitizen]
-name = "cz_conventional_commits"
-message_length_limit = 72

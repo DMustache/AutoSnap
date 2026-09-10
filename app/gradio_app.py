@@ -14,7 +14,7 @@ print("Gradio version:", gr.__version__)
 def render_notebook_overview(language: str) -> str:
     """Render notebook markdown and code as static documentation; never execute it."""
     notebook_name = "classification_en.ipynb" if language == "en" else "classification_ru.ipynb"
-    notebook_path = Path(__file__).resolve().parent.parent / notebook_name
+    notebook_path = Path(__file__).resolve().parent.parent / "training" / notebook_name
     if not notebook_path.exists():
         return f"Notebook `{notebook_name}` is not available."
 
